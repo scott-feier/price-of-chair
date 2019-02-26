@@ -5,7 +5,7 @@ from src.models.alerts.views import alert_blueprint
 from src.models.stores.views import store_blueprint
 
 app = Flask(__name__)
-app.config.from_object('config')
+app.config.from_object('src.config')
 app.secret_key = '123'
 
 app.register_blueprint(user_blueprint, url_prefix='/users')

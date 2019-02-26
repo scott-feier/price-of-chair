@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="jumbotron">
+    <h1 class="display-4">Pricing Service</h1>
+    <p class="lead">We scan online store websites to alert you of price drops</p>
+    <hr class="my-4">
+    {% if session['email'] %}
+         <p>Select an action from the menu above</p>
+    {% else %}
+        <p>Just sign up and get started by adding the URL of an item</p>
+        <a class="btn btn-primary btn-lg" href="{{ url_for('users.register_user') }}" role="button">Register</a>
+    {% endif %}
+</div>
+
+
+{% endblock %}

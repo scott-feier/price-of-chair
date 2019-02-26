@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block content %}
+        <div class="page-header">
+        <h1>Stores
+            <small>showing already existing stores</small>
+        </h1>
+    </div>
+    <div class="list-group">
+        {% for store in stores %}
+        <!-- display list of stores here -->
+        <a href="{{ url_for('stores.show_store', store_id=store._id) }}" class="list-group-item">
+            <h4 class="list-group-item-heading">
+                  Store info for {{ store.name }}</h4>
+            <p class="list-group-item-text">
+                Name: <strong>{{ store.name }}</strong><br>
+                URL Prefix: {{ store.url_prefix }}<br>
+                Tag name: {{ store.tag_name }}<br>
+                Query: {{ store.query }}</p>
+        </a>
+        {% endfor %}
+    </div>
+    {% if session['email'] in config.ADMINS %}
+        <a class="btn btn-success btn-margin" href="{{ url_for('stores.create_store') }}">
+            <i class="fas fa-plus"></i> New Store</a>
+    {% endif %}
+{% endblock %}

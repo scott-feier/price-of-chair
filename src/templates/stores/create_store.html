@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="page-header">
+    <h1>Create Store</h1>
+</div>
+<div class="container page-form">
+    <form id="new-store-form" action="{{ url_for('stores.create_store') }}" method="post">
+        <div class="form-group">
+            <label for="name">Store Name</label>
+            <input type='text' class="form-control" id="name" name="name" placeholder="Store Name">
+        </div>
+        <div class="form-group">
+            <label for="url_prefix">URL Prefix</label>
+            <input type='text' class="form-control" id="url_prefix" name="url_prefix" placeholder="http://..." aria-describedby="urlPrefix">
+            <p id="urlPrefix" class="help-block">Enter the first part of the URL for this store</p>
+        </div>
+        <div class="form-group">
+            <label for="tag_name">Tag Name</label>
+            <input type='text' class="form-control" id="tag_name" name="tag_name" placeholder="span"
+                   aria-describedby="tagName">
+            <p id="tagName" class="help-block">Enter the HTML tag which delimits the start of the price block (usually a <code>span</code>)</p>
+        </div>
+        <div class="form-group">
+            <label for="query">Query</label>
+            <input type='text' class="form-control" id="query" name="query" placeholder='{ "att1": "value1", "att2": "value2" } '
+                   aria-describedby="queryHelp">
+            <p id="queryHelp" class="help-block">Enter the attribute(s) and value(s) attached to the tag, in JSON format.  Examples<br>
+                {"class": "price"}<br>
+                {"class": "priceView-hero-price"}<br>
+                {"itemprop": "offers", "class": "price"}
+            </p>
+        </div>
+        <button type="submit" class="btn btn-success" id="submit-button">Create Store</button>
+    </form>
+</div>
+{% endblock %}

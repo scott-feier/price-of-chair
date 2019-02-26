@@ -1,0 +1,16 @@
+#login-form {
+    margin-top: 25px;
+}
+
+.page-form {
+    max-width: 640px;
+    margin: 0 auto;
+    background-color: #E9E9E9;
+    padding: 20px;
+    border: 1px solid #D5D5D5;
+    border-radius: 5px;
+}
+
+.btn-margin {
+    margin: 8px 16px;
+}

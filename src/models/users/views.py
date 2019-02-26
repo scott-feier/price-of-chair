@@ -1,13 +1,11 @@
-from flask import Blueprint, request, session, url_for, render_template
-from werkzeug.utils import redirect
+from flask import Blueprint, request, session, url_for, render_template, redirect
+
 from src.models.users.user import User
-import src.models.users.errors as UserErrors
-import src.models.users.decorators as user_decorators
+import src.models.users.errors as user_errors
+import src.common.decorators as decorators
 
-__author__ = 'jslvtr'
-
-
-user_blueprint = Blueprint('users', __name__)
+base_model = 'users'
+user_blueprint = Blueprint(base_model, __name__)
 
 
 @user_blueprint.route('/login', methods=['GET', 'POST'])
@@ -20,10 +18,13 @@ def login_user():
             if User.is_login_valid(email, password):
                 session['email'] = email
                 return redirect(url_for(".user_alerts"))
-        except UserErrors.UserError as e:
+            else:  # error if bad email or password
+                return render_template(base_model + '/' + 'login.html')
+        except user_errors.UserError as e:
             return e.message
 
-    return render_template("users/login.jinja2")  # Send the user an error if their login was invalid
+    else:  # it's a GET not a POST
+        return render_template(base_model + '/' + 'login.html')
 
 
 @user_blueprint.route('/register', methods=['GET', 'POST'])
@@ -36,26 +37,31 @@ def register_user():
             if User.register_user(email, password):
                 session['email'] = email
                 return redirect(url_for(".user_alerts"))
-        except UserErrors.UserError as e:
+        except user_errors.UserError as e:
             return e.message
-
-    return render_template("users/register.jinja2")  # Send the user an error if their login was invalid
+    #  it's a GET not a POST, OR pass through to here after unsuccessful post
+    return render_template(base_model + '/' + 'register.html')
 
 
 @user_blueprint.route('/alerts')
-@user_decorators.requires_login
+@decorators.requires_login  # redirect the user to users.login if session[email] is None
 def user_alerts():
-    user = User.find_by_email(session['email'])
-    return render_template("users/alerts.jinja2", alerts=user.get_alerts())
+    user = User.get_from_db_by_email(session['email'])
+    alerts = None
+    if user is not None:
+        user = User.db_to_rec(user)
+        alerts = user.get_alerts()
+
+    return render_template(base_model + '/' + 'alerts.html', alerts=alerts)
 
 
 @user_blueprint.route('/logout')
 def logout_user():
     session['email'] = None
-    return redirect(url_for('home'))
+    #  home is defined in app.py
+    return redirect(url_for("home"))
 
 
 @user_blueprint.route('/check_alerts/<string:user_id>')
-@user_decorators.requires_login
 def check_user_alerts(user_id):
     pass

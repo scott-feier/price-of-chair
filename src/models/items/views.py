@@ -1,11 +1,11 @@
 from flask import Blueprint
 
-__author__ = 'jslvtr'
-
-
 item_blueprint = Blueprint('items', __name__)
 
 
 @item_blueprint.route('/item/<string:name>')
-def item_page(name):
+def item_page():
     pass
+
+#  <span id="priceblock_ourprice" class="a-size-medium a-color-price">$629.00</span>
+

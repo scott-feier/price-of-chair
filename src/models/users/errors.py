@@ -1,12 +1,9 @@
-__author__ = 'jslvtr'
-
-
 class UserError(Exception):
     def __init__(self, message):
         self.message = message
 
 
-class UserNotExistsError(UserError):
+class UserNotExistError(UserError):
     pass
 
 
@@ -14,7 +11,11 @@ class IncorrectPasswordError(UserError):
     pass
 
 
-class UserAlreadyRegisteredError(UserError):
+class UserAlreadyExistsError(UserError):
+    pass
+
+
+class RegisterError(UserError):
     pass
 
 

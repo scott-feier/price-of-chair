@@ -1,74 +1,87 @@
-from flask import Blueprint, request, render_template, session, redirect, url_for
+from flask import Blueprint, request, session, url_for, render_template, redirect
 
 from src.models.alerts.alert import Alert
 from src.models.items.item import Item
-import src.models.users.decorators as user_decorators
+import src.common.decorators as decorators
 
-__author__ = 'jslvtr'
+base_model = 'alerts'
+alert_blueprint = Blueprint(base_model, __name__)
 
-alert_blueprint = Blueprint('alerts', __name__)
+
+@alert_blueprint.route('/')
+def index():
+    return redirect(url_for('users.user_alerts'))
 
 
-@alert_blueprint.route('/new', methods=['GET', 'POST'])
-@user_decorators.requires_login
+@alert_blueprint.route('/create', methods=['GET', 'POST'])
+@decorators.requires_login  # redirect the user to users.login if session[email] is None
 def create_alert():
     if request.method == 'POST':
         name = request.form['name']
         url = request.form['url']
-        price_limit = float(request.form['price_limit'])
+        price_limit = request.form['price_limit']
 
         item = Item(name, url)
-        item.save_to_mongo()
+        item.load_price()
+        item.save_to_db()
 
         alert = Alert(session['email'], price_limit, item._id)
-        alert.load_item_price()  # This already saves to MongoDB
+        alert.save_to_db()
+        alert.load_item_price()
+#        return render_template(base_model + '/' + 'alert.html', alert=alert)
 
-    # What happens if it's a GET request
-    return render_template("alerts/new_alert.jinja2")  # Send the user an error if their login was invalid
+    #  it's a GET not a POST, OR pass through to here after POST
+    return render_template(base_model + '/' + 'create_alert.html')
 
 
 @alert_blueprint.route('/edit/<string:alert_id>', methods=['GET', 'POST'])
-@user_decorators.requires_login
+@decorators.requires_login  # redirect the user to users.login if session[email] is None
 def edit_alert(alert_id):
+    alert = Alert.get_obj_from_db_by_id(alert_id)
     if request.method == 'POST':
-        price_limit = float(request.form['price_limit'])
+        alert.price_limit = request.form['price_limit']
 
-        alert = Alert.find_by_id(alert_id)
-        alert.price_limit = price_limit
-        alert.load_item_price()  # This already saves to MongoDB
+        alert.update_to_db()
+        return redirect(url_for('users.user_alerts'))
+#        return render_template(base_model + '/' + 'alert.html', alert=alert)
+    else:
+        #  it's a GET not a POST
+        return render_template(base_model + '/' + 'edit_alert.html', alert=alert)
 
-    # What happens if it's a GET request
-    return render_template("alerts/edit_alert.jinja2", alert=Alert.find_by_id(alert_id))  # Send the user an error if their login was invalid
+
+@alert_blueprint.route('/delete/<string:alert_id>')
+@decorators.requires_login  # redirect the user to users.login if session[email] is None
+def delete_alert(alert_id):
+    Alert.del_from_db_by_id(alert_id)
+    return redirect(url_for('users.user_alerts'))
 
 
 @alert_blueprint.route('/deactivate/<string:alert_id>')
-@user_decorators.requires_login
+@decorators.requires_login  # redirect the user to users.login if session[email] is None
 def deactivate_alert(alert_id):
-    Alert.find_by_id(alert_id).deactivate()
+    alert = Alert.get_obj_from_db_by_id(alert_id)
+    alert.deactivate()
     return redirect(url_for('users.user_alerts'))
 
 
 @alert_blueprint.route('/activate/<string:alert_id>')
-@user_decorators.requires_login
+@decorators.requires_login  # redirect the user to users.login if session[email] is None
 def activate_alert(alert_id):
-    Alert.find_by_id(alert_id).activate()
+    alert = Alert.get_obj_from_db_by_id(alert_id)
+    alert.activate()
     return redirect(url_for('users.user_alerts'))
 
 
-@alert_blueprint.route('/delete/<string:alert_id>')
-@user_decorators.requires_login
-def delete_alert(alert_id):
-    Alert.find_by_id(alert_id).delete()
-    return redirect(url_for('users.user_alerts'))
+@alert_blueprint.route('/update/<string:alert_id>')
+@decorators.requires_login  # redirect the user to users.login if session[email] is None
+def update_alert(alert_id):
+    alert = Alert.get_obj_from_db_by_id(alert_id)
+    alert.load_item_price()
+    return redirect(url_for('.show_alert', alert_id=alert_id))
 
 
-@alert_blueprint.route('/<string:alert_id>')
-@user_decorators.requires_login
-def get_alert_page(alert_id):
-    return render_template('alerts/alert.jinja2', alert=Alert.find_by_id(alert_id))
-
-
-@alert_blueprint.route('/check_price/<string:alert_id>')
-def check_alert_price(alert_id):
-    Alert.find_by_id(alert_id).load_item_price()
-    return redirect(url_for('.get_alert_page', alert_id=alert_id))
+@alert_blueprint.route('/show_alert/<string:alert_id>')
+@decorators.requires_login  # redirect the user to users.login if session[email] is None
+def show_alert(alert_id):
+    alert = Alert.get_obj_from_db_by_id(alert_id)
+    return render_template(base_model + '/' + 'alert.html', alert=alert)

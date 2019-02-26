@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Title</title>
+
+    {% include 'html_dependencies.html' %}
+
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container">
+        <a class="navbar-brand" href="/" title="Home">Pricing</a>
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar"
+                aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbar">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('stores.index') }}">Stores</a>
+                </li>
+             </ul>
+
+
+            {% if session['email'] %}
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('users.user_alerts') }}"><i class="fas fa-exclamation-circle"></i> Your Alerts</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('users.logout_user') }}"><i class="fas fa-sign-out-alt"></i> Log Out</a>
+                </li>
+            </ul>
+
+
+            {% else %}
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('users.register_user') }}"><i class="fas fa-user-edit"></i> Register</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('users.login_user') }}"><i class="fas fa-sign-in-alt"></i> Log In</a>
+                </li>
+            </ul>
+
+            {% endif %}
+        </div>
+    </div>
+</nav>
+
+
+<div class="content container">
+    {% block content %}
+
+    {% endblock %}
+</div>
+</body>
+</html>

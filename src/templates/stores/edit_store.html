@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="page-header">
+    <h1>Edit Store id: {{ store._id }}</h1>
+</div>
+<div class="container page-form">
+    <form id="edit-store-form" method="post">
+        <div class="form-group">
+            <label for="name">Store Name</label>
+            <input type='text' class="form-control" id="name" name="name" value="{{ store.name }}">
+        </div>
+        <div class="form-group">
+            <label for="url_prefix">URL Prefix</label>
+            <input type='text' class="form-control" id="url_prefix" name="url_prefix" value="{{ store.url_prefix }}"
+                   aria-describedby="urlPrefix">
+            <p id="urlPrefix" class="help-block">Enter the first part of the URL for this store</p>
+        </div>
+        <div class="form-group">
+            <label for="tag_name">Tag Name</label>
+            <input type='text' class="form-control" id="tag_name" name="tag_name" value="{{ store.tag_name }}"
+                   aria-describedby="tagName">
+            <p id="tagName" class="help-block">Enter the HTML tag which delimits the start of the price block (usually a
+                <code>span</code>)</p>
+        </div>
+        {% set myQuery=store.query|tojson %}
+        <div class="form-group">
+            <label for="query">Query</label>
+            <input type='text' class="form-control" id="query" name="query" value='{{ myQuery }}'
+                   aria-describedby="queryHelp">
+            <p id="queryHelp" class="help-block">Enter the attribute(s) and value(s) attached to the tag, in JSON
+                format. Examples<br>
+                {"class": "price"}<br>
+                {"class": "priceView-hero-price"}<br>
+                {"itemprop": "offers", "class": "price"}
+            </p>
+        </div>
+        <button type="submit" class="btn btn-default" id="submit-button">Update Store</button>
+    </form>
+
+</div>
+{% endblock %}

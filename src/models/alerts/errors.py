@@ -1,8 +1,8 @@
-class StoreError(Exception):
+class AlertError(Exception):
     def __init__(self, message):
         self.message = message
 
 
-class StoreNotFoundError(StoreError):
+class AlertNotExistError(AlertError):
     pass
 
